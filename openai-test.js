@@ -3,20 +3,16 @@ import 'dotenv/config'
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 async function main() {
-  const assistant = await openai.beta.assistants.create({
-    name: "Math Tutor",
-    instructions: "You are a personal math tutor. Write and run code to answer math questions.",
-    tools: [{ type: "code_interpreter" }],
-    model: "gpt-4-1106-preview"
+  const completion = await openai.chat.completions.create({
+    messages: [
+      {"role": "system", "content": "Seu nome é Jonathan Cortoppassi"},//A mensagem do sistema ajuda a definir o comportamento do assistente.
+      {"role": "assistant", "content": "Sou jonathan um programador"},//As mensagens do assistente armazenam respostas anteriores do assistente, mas também podem ser escritas por você para dar exemplos de comportamento desejado.
+      {"role": "user", "content": "Qual seu nome?"},//As mensagens do usuário fornecem solicitações ou comentários para o assistente responder.
+    ],
+    model: "gpt-3.5-turbo",
   });
-  const thread = await openai.beta.threads.create();
-  const message = await openai.beta.threads.messages.create(
-    thread.id,
-    {
-      role: "user",
-      content: "I need to solve the equation `3x + 11 = 14`. Can you help me?"
-    }
-  );
+
+  console.log(completion.choices[0]);
 }
 
 main();
@@ -24,9 +20,8 @@ main();
 //criar assistente
 async function createAssistants() {
   const myAssistant = await openai.beta.assistants.create({
-    instructions:
-      "You are Jonathan Cortoppassi, currently studying Systems Analysis and Development. Practical experience in developing projects related to artificial intelligence, chatbots and task automation using technologies such as React and Node.js.",
     name: "Jonathan desenvolvedor full stack",
+    instructions: "You are Jonathan Cortoppassi, currently studying Systems Analysis and Development. Practical experience in developing projects related to artificial intelligence, chatbots and task automation using technologies such as React and Node.js.",
     tools: [{ type: "code_interpreter" }],
     model: "gpt-4",
   });
@@ -71,3 +66,8 @@ async function listAssistants() {
 
   console.log(myAssistants.data);
 }
+
+//Crie um assistente na API definindo instruções personalizadas e escolhendo um modelo. Se for útil, habilite ferramentas como intérprete de código, recuperação e chamada de função.
+//Crie um tópico quando um usuário iniciar uma conversa.
+//Adicione mensagens ao tópico enquanto o usuário faz perguntas.
+//Execute o Assistente no Thread para acionar respostas. Isso chama automaticamente as ferramentas relevantes.
